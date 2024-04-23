@@ -1,0 +1,344 @@
+---
+title: "train"
+author: "Giordano Vitale"
+date: "2024-04-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load the libraries
+```{r}
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(car)
+library(corrplot)
+library(e1071)
+library(MASS)
+library(pls)
+library(splines)
+library(caret)
+library(leaps)
+library(gam)
+library(MLmetrics)
+library(cluster)
+library(rpart)
+library(rpart.plot)
+library(factoextra)
+library(plotly)
+library(tidyverse)
+
+options(repr.matrix.max.cols=50, repr.matrix.max.rows=100)
+```
+
+Columns description:
+1. **blue**: Has bluetooth or not
+2. **clock_speed**: Speed at which microprocessor executes instructions
+3. **dual_sim**: Has dual sim support or not
+4. **fc**: Front Camera mega pixels
+5. **four_g**: Has 4G or not
+6. **int_memory**: Internal Memory in Gigabytes
+7. **m_dep**: Mobile Depth in cm
+8. **mobile_wt**: Weight of mobile phone
+9. **n_cores**: Number of cores of processor
+10. **pc**: Primary Camera mega pixels
+11. **px_height**: Pixel Resolution Height
+12. **px_width**: Pixel Resolution Width
+13. **ram**: Random Access Memory in Megabytes
+14. **sc_h**: Screen Height of mobile in cm
+15. **sc_w**: Screen Width of mobile in cm
+16. **talk_time**: Longest time that a single battery charge will last when you are
+17. **three_g**: Has 3G or not
+18. **touch_screen**: Has touch screen or not
+19. **wifi**: Has wifi or not
+20. **id**: ID
+21. **battery_power**: Total energy a battery can store in one time measured in mAh
+
+Import the data set
+```{r}
+train <- read.csv('train.csv')
+train <- as.data.frame(train)
+
+test <- read.csv('test.csv')
+test <- as.data.frame(test)
+
+head(train)[1:3, ]
+```
+
+Map from 4 to 2 classes
+```{r}
+train$price_range <- ifelse(train$price_range %in% c(0, 1), 0, 1)
+```
+
+
+# 1 - Data Pre processing
+```{r}
+paste('Number of observations:', dim(train)[1])
+paste('Number of columns:', dim(train)[2])
+```
+
+Check the datatype for each column:
+```{r}
+map(train, class)
+```
+Considerations: All columns seem to be up to date.
+
+
+Check for null values
+```{r}
+sum(is.na(train))
+```
+
+Check for duplicates
+```{r}
+sum(duplicated(train))
+```
+
+# 2 - Exploratory Data Analysis
+```{r}
+summary(train)
+```
+
+Create a function to build histogram plots with normal line fitted.
+```{r}
+histo_plot<- function (data, col, bins = 30) {
+  ggplot(data, aes(x = .data[[col]])) + 
+  geom_histogram(aes(y = after_stat(density)),
+                 bins = bins,
+                 fill = "lightblue",
+                 color = "black") + 
+  geom_density(kernel = "gaussian",
+               color = "red",
+               size = 1.2) + 
+  labs(x = col, y= "Density") +
+  ggtitle(paste("Histogram with density line -", col)) +
+  theme(plot.title = element_text(hjust = 0.5))
+  }
+```
+
+
+Apply the function to each column.
+```{r}
+lapply(colnames(train), function(col) histo_plot(train, col, bins=16))
+```
+
+
+```{r}
+binary_columns <- c()
+nonbinary_columns <- c()
+
+# Determine binary and non-binary columns
+for (col in names(train)) {
+  if (length(unique(train[[col]])) == 2) {
+    binary_columns <- c(binary_columns, col)
+  } else {
+    nonbinary_columns <- c(nonbinary_columns, col)
+  }
+}
+
+total_columns <- length(binary_columns) + length(nonbinary_columns)
+
+# Set plot margins
+par(mfrow=c(4, 3), mar=c(3, 3, 1, 1))
+
+# Plot histograms for each column
+for (i in 1:total_columns) {
+  if (names(train)[i] %in% binary_columns || names(train)[i] == 'price_range') {
+    hist(train[[i]], col='green', main=names(train)[i])
+  } else {
+    hist(train[[i]], main=names(train)[i], col='lightblue')
+  }
+}
+
+# Reset plotting parameters
+par(mfrow=c(1, 1))
+
+```
+
+
+Check the skewness of each distribution.
+```{r}
+skewness <- lapply(colnames(train), function(col) skewness(train[[col]]))
+
+variable_names <- names(train)
+
+skewness <- unlist(skewness)
+skewness <- round(skewness, digits = 2)
+
+skewness_df <- data.frame(Variable = variable_names, Skewness = skewness)
+skewness_df
+```
+
+
+
+Output box plots for each column of the data frame. Useful for anomalies detection.
+```{r}
+for (col in colnames(train)) {
+  boxplot(train[[col]], main = paste("Boxplot - ", col))
+}
+```
+
+Comment: potential presence of outliers in the columns:
+- fc
+- pc height
+
+
+Produce Q-Q plots with confidence intervals.
+```{r}
+for (col in colnames(train)) {
+  qqPlot(train[[col]], main = paste("Q-Q plot - ", col))
+}
+```
+
+
+
+
+Scatter plots of the dependent variable as a function of the i-th independent one, individually.
+```{r}
+scatter_plot <- function(data, x_var, y_var) {
+  ggplot(data, aes_string(x = x_var, y = y_var)) +
+    geom_point(col = "black", size = 2) +
+    labs(x = x_var, y = y_var) +
+    ggtitle(paste("Scatter Plot of", y_var, "vs.", x_var)) +
+    theme(plot.margin = unit(c(1,1,1,1), "cm"),      # Set plot margins
+         aspect.ratio = 0.5,                            # Set aspect ratio (square)
+        plot.background = element_rect(fill = "white")) +  # Set plot background color
+   theme_minimal()
+}
+```
+
+
+```{r}
+explanatory_variables <- names(train)[1:19]
+
+# Create scatter plots for each explanatory variable
+scatter_plots_list <- lapply(explanatory_variables, function(var) scatter_plot(data=train, 
+                                                                               x_var=var,
+                                                                               y_var="price_range"))
+scatter_plots_list
+```
+While these plots make no sense in this case study, we can keep this function in case we will develop our project on a different data set.
+
+
+
+Compute correlation matrix.
+```{r}
+correlation_matrix <- cor(train)
+round(correlation_matrix, 2)
+```
+
+
+```{r}
+corrplot::corrplot(correlation_matrix,
+                   method = "number",
+                   number.cex = 0.4,
+                   tl.col = "black",
+                   type = "lower",
+                   tl.srt = 45)
+```
+Comment: only a small number of variables seem to be mutually correlated.
+Moreover, only RAM has a significant correlation with price_range.
+
+
+
+Apply the train-test split.
+Train = 80%
+Test = 20%
+```{r}
+set.seed(1)
+
+sample <- sample(c(TRUE, FALSE), 
+                 nrow(train), 
+                 replace = TRUE, 
+                 prob = c(0.8,0.2))
+
+train  <- train[sample, ]
+val   <- train[!sample, ]
+```
+
+```{r}
+dim(train)
+dim(val)
+```
+
+# 3 - Bayesian Logistic Regression
+
+Necessary libraries to perform Bayesian logistic regression.
+```{r}
+#install.packages("rstanarm")
+library(rstanarm)
+```
+
+```{r}
+train$price_range <- factor(train$price_range)
+
+X <- model.matrix(price_range ~ . - 1, data = train)
+y <- train$price_range
+
+log_formula <- formula("price_range ~ ram + battery_power")
+```
+
+
+
+Define the prior distributions as student-t distributions (we can change if needed)
+```{r}
+priors = normal(location=0, scale=2.5)
+```
+
+
+```{r}
+posteriors = stan_glm(log_formula,
+                      data=train,
+                      family=binomial(link="logit"),
+                      prior = priors, 
+                      prior_intercept = priors, 
+                      QR=TRUE,
+                      seed = 1, 
+                      refresh=0)
+```
+
+
+
+```{r}
+pplot <- plot(posteriors, "areas", prob = 0.95, prob_outer = 1)
+pplot + geom_vline(xintercept = 0)
+```
+This fucking output is strange. Every fucking bastard library or whatever seems to be weird. There is no straightforward implementation of a fucking logistic bayesian model. I am frustrated at this point.
+Same disappointing plot using different priors...
+
+
+
+                ###########################################
+                ###########################################
+                        older, unsuccesful attempts
+                ###########################################
+                ###########################################
+
+Considerations:
+- By default, stan_glm() uses weakly informative priors, which are intended to be minimally informative and allow the data to primarily determine the parameter estimates
+- If you want to specify custom priors for the model parameters, you can use the prior argument in the stan_glm() function to specify the prior distributions (see documentation)
+
+```{r}
+bayes_logistic_regression <- stan_glm(price_range ~ ., data = train, family = binomial(link = "logit"))
+```
+```{r}
+summary(bayes_logistic_regression)
+```
+
+I don't know whether this output is ok or not...
+
+
+
+
+
+
+
+
+
+
+
+
+
