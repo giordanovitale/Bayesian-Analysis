@@ -12,7 +12,8 @@ This project was developed as a part of our Bayesian Analysis Course at Unimi.
 ## Usage
 
 1. Clone this repository.
-2. Execute the code chunks and enjoy.
+2. Install the required dependencies by running `pip install -r requirements.txt`.
+3. Execute the code chunks and enjoy.
 
 
 
