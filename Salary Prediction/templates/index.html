@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Prediction for Data Jobs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: #fff;
+        }
+        h1 {
+            color: #fff;
+            text-align: center;
+        }
+        h2 {
+            color: #fff;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #777;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #444;
+            color: #fff;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .note {
+            font-size: smaller;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <h1>Salary Prediction for Data Jobs</h1>
+    <form id="predictionForm">
+        <label for='Type of ownership'>Type of ownership:</label>
+        <select id='Type of ownership' name='Type of ownership' required>
+        <option value='Company - Public'>Company - Public</option>
+        <option value='Company - Private'>Company - Private</option>
+        <option value='Nonprofit Organization'>Nonprofit Organization</option>
+        <option value='Subsidiary or Business Segment'>Subsidiary or Business Segment</option>
+        <option value='Government'>Government</option>
+        <option value='Hospital'>Hospital</option>
+        <option value='Other Organization'>Other Organization</option>
+        <option value='School / School District'>School / School District</option>
+        </select><br><br>
+        <label for='Sector'>Sector:</label>
+        <select id='Sector' name='Sector' required>
+        <option value='Information Technology'>Information Technology</option>
+        <option value='Finance'>Finance</option>
+        <option value='Insurance'>Insurance</option>
+        <option value='Health Care'>Health Care</option>
+        <option value='Biotech & Pharmaceuticals'>Biotech & Pharmaceuticals</option>
+        <option value='Business Services'>Business Services</option>
+        <option value='Aerospace & Defense'>Aerospace & Defense</option>
+        <option value='Manufacturing'>Manufacturing</option>
+        <option value='Media'>Media</option>
+        <option value='Agriculture & Forestry'>Agriculture & Forestry</option>
+        <option value='Retail'>Retail</option>
+        <option value='Real Estate'>Real Estate</option>
+        <option value='Oil, Gas, Energy & Utilities'>Oil, Gas, Energy & Utilities</option>
+        <option value='Government'>Government</option>
+        <option value='Telecommunications'>Telecommunications</option>
+        <option value='Travel & Tourism'>Travel & Tourism</option>
+        <option value='Arts, Entertainment & Recreation'>Arts, Entertainment & Recreation</option>
+        <option value='Transportation & Logistics'>Transportation & Logistics</option>
+        <option value='Education'>Education</option>
+        </select><br><br>
+        <label for='Revenue'> Company's Revenue:</label>
+        <select id='Revenue' name='Revenue' required>
+        <option value='$1 to $5 million (USD)'>$1 to $5 million (USD)</option>
+        <option value='$5 to $10 million (USD)'>$5 to $10 million (USD)</option>
+        <option value='$10 to $25 million (USD)'>$10 to $25 million (USD)</option>
+        <option value='$25 to $50 million (USD)'>$25 to $50 million (USD)</option>
+        <option value='$50 to $100 million (USD)'>$50 to $100 million (USD)</option>
+        <option value='$100 to $500 million (USD)'>$100 to $500 million (USD)</option>
+        <option value='$500 million to $1 billion (USD)'>$500 million to $1 billion (USD)</option>
+        <option value='$1 to $2 billion (USD)'>$1 to $2 billion (USD)</option>
+        <option value='$2 to $5 billion (USD)'>$2 to $5 billion (USD)</option>
+        <option value='$5 to $10 billion (USD)'>$5 to $10 billion (USD)</option>
+        <option value='$10+ billion (USD)'>$10+ billion (USD)</option>
+        </select><br><br>
+        <label for='Job Location'>Job Location (State):</label>
+        <select id='Job Location' name='Job Location' required>
+        <option value='CT'>CT</option>
+        <option value='NJ'>NJ</option>
+        <option value='NY'>NY</option>
+        <option value='CA'>CA</option>
+        <option value='VA'>VA</option>
+        <option value='AL'>AL</option>
+        <option value='MA'>MA</option>
+        <option value='IL'>IL</option>
+        <option value='OR'>OR</option>
+        <option value='UT'>UT</option>
+        <option value='OH'>OH</option>
+        <option value='TN'>TN</option>
+        <option value='IN'>IN</option>
+        <option value='MD'>MD</option>
+        <option value='TX'>TX</option>
+        <option value='PA'>PA</option>
+        <option value='DC'>DC</option>
+        <option value='MO'>MO</option>
+        <option value='WI'>WI</option>
+        <option value='CO'>CO</option>
+        <option value='NC'>NC</option>
+        <option value='FL'>FL</option>
+        <option value='WA'>WA</option>
+        <option value='KY'>KY</option>
+        <option value='DE'>DE</option>
+        <option value='MI'>MI</option>
+        <option value='NM'>NM</option>
+        <option value='AZ'>AZ</option>
+        <option value='KS'>KS</option>
+        <option value='MN'>MN</option>
+        <option value='GA'>GA</option>
+        <option value='ID'>ID</option>
+        <option value='SC'>SC</option>
+        <option value='IA'>IA</option>
+        </select><br><br>
+        <label for='job_title_sim'>Job Position:</label>
+        <select id='job_title_sim' name='job_title_sim' required>
+        <option value='data analitics'>data analitics</option>
+        <option value='analyst'>analyst</option>
+        <option value='data scientist'>data scientist</option>
+        <option value='other scientist'>other scientist</option>
+        <option value='director'>director</option>
+        <option value='data engineer'>data engineer</option>
+        <option value='Data scientist project manager'>Data scientist project manager</option>
+        <option value='data modeler'>data modeler</option>
+        <option value='machine learning engineer'>machine learning engineer</option>
+        </select><br><br>
+        
+        <h2>Skill Set</h2>
+        <p class="note">Note: 1 means you have this skill, and 0 means the contrary.</p>
+        <br><br>
+        <label for='Python'>Python:</label>
+        <input type="number" id="Python" name="Python" min="0" max="1" step="1" value="0">
+
+        <label for='spark'>Spark:</label>
+        <input type="number" id="spark" name="spark" min="0" max="1" step="1" value="0">
+        <label for='aws'>AWS:</label>
+        <input type="number" id="aws" name="aws" min="0" max="1" step="1" value="0">
+        <label for='sql'>SQL:</label>
+        <input type="number" id="sql" name="sql" min="0" max="1" step="1" value="0">
+        <label for='sas'>SAS:</label>
+        <input type="number" id="sas" name="sas" min="0" max="1" step="1" value="0">
+        <label for='keras'>Keras:</label>
+        <input type="number" id="keras" name="keras" min="0" max="1" step="1" value="0">
+        <label for='pytorch'>PyTorch:</label>
+        <input type="number" id="pytorch" name="pytorch" min="0" max="1" step="1" value="0">
+        <label for='tensor'>TensorFlow:</label>
+        <input type="number" id="tensor" name="tensor" min="0" max="1" step="1" value="0">
+        <label for='hadoop'>Hadoop:</label>
+        <input type="number" id="hadoop" name="hadoop" min="0" max="1" step="1" value="0">
+        <label for='tableau'>Tableau:</label>
+        <input type="number" id="tableau" name="tableau" min="0" max="1" step="1" value="0">
+        <label for='bi'>BI:</label>
+        <input type="number" id="bi" name="bi" min="0" max="1" step="1" value="0">
+        <label for='flink'>Flink:</label>
+        <input type="number" id="flink" name="flink" min="0" max="1" step="1" value="0">
+        <label for='mongo'>MongoDB:</label>
+        <input type="number" id="mongo" name="mongo" min="0" max="1" step="1" value="0">
+        <label for='google_an'>Google Analytics:</label>
+        <input type="number" id="google_an" name="google_an" min="0" max="1" step="1" value="0">
+        <label for='excel'>Excel:</label>
+        <input type="number" id="excel" name="excel" min="0" max="1" step="1" value="0">
+        <label for='scikit'>Scikit-learn:</label>
+        <input type="number" id="scikit" name="scikit" min="0" max="1" step="1" value="0">
+        <button type="button" onclick="predictSalary()">Predict Salary</button>
+    </form>
+
+    <div id="result" style="text-align: center; font-size: 24px; margin-top: 20px; font-weight: bold;"></div>
+
+<script>
+    function predictSalary() {
+        var form = document.getElementById("predictionForm");
+        var formData = new FormData(form);
+
+        fetch('/predict', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("result").innerText = "Predicted Salary: " + data.predicted_salary + '$';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+
