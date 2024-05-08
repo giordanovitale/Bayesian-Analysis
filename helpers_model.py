@@ -1,15 +1,22 @@
 import os
 import sys
+import subprocess
+
 # Get the current working directory
 current_dir = os.getcwd()
 
-# Construct the path to the 'bayesian_tree' folder
-bayesian_tree_path = os.path.join(current_dir, 'bayesian_tree')
+repo_url = 'https://github.com/UBS-IB/bayesian_tree'
+
+cloned_repo_folder = 'bayesian_tree'
+
+cloned_repo_path = os.path.join(current_dir, cloned_repo_folder)
+
+
+subprocess.run(['git', 'clone', repo_url, cloned_repo_path])
 
 
 
-sys.path.append(bayesian_tree_path)
-
+sys.path.append(cloned_repo_path)
 
 
 
@@ -18,7 +25,6 @@ from bayesian_tree import bayesian_decision_tree
 from bayesian_tree import examples
 from bayesian_decision_tree import regression
 from bayesian_decision_tree.regression import PerpendicularRegressionTree
-
 
 
 
