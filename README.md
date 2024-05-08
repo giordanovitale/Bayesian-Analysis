@@ -1,4 +1,4 @@
-# Salary Prediction Project
+# Bayesian Regression Analysis for Predicting Salaries in Data Jobs Project
 
 This project is aimed at predicting salaries using Bayesian regression. It includes a web application for users to input data and obtain salary predictions based on the trained model.
 This project was developed as a part of our Bayesian Analysis Course at Unimi.
