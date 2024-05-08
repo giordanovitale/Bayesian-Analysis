@@ -1,4 +1,4 @@
-# Bayesian Analysis App
+# Salary Prediction for Data Jobs App
 
 This app is designed to perform Salary Prediction using the Bayesian Ridge Model. It allows users to input data and obtain predictions based on the trained model.
 
