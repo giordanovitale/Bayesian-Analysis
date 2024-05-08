@@ -1,0 +1,13 @@
+category_encoders
+eli5
+scikit-optimize
+kaggle
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+statsmodels
+pymc
+arviz
+shap
