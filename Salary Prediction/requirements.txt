@@ -10,4 +10,5 @@ arviz
 pickle-mixin
 flask
 plotly
+imblearn
 
