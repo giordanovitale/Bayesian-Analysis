@@ -7,3 +7,5 @@ scikit-learn
 statsmodels
 pymc
 arviz
+pickle-mixin
+flask
