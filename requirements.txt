@@ -11,3 +11,6 @@ statsmodels
 pymc
 arviz
 shap
+plotly 
+pickle-mixin
+
