@@ -70,7 +70,7 @@ def predict_salary():
     print("Predictions:", predictions_dict)
 
     # Extract predicted salary
-    predicted_salary = predictions_dict['Bayesian_Ridge'][0]  # Assuming only one prediction
+    predicted_salary = predictions_dict['Bayesian_Ridge'][0]  
 
     # Return predicted salary as JSON response
     return jsonify({'predicted_salary': predicted_salary})
