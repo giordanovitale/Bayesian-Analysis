@@ -9,4 +9,5 @@ pymc
 arviz
 pickle-mixin
 flask
+plotly
 
