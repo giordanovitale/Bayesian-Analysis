@@ -429,18 +429,18 @@ def compare_models(predictions_dict, y_test):
 
 def plot_coef(coefficients_dict):
   mapping_names = {
-      'intercept': 'intercept',
       'beta[0]': 'Type of ownership',
       'beta[1]': 'Sector',
       'beta[2]': 'Revenue',
       'beta[3]': 'job_title_sim',
-      'beta[4]': 'Programming',
-      'beta[5]': 'Queries',
-      'beta[6]': 'Machine Learning',
-      'beta[7]': 'Dashboards',
-      'beta[8]': 'Cloud',
-      'beta[9]': 'Apache',
-      'beta[10]': 'Job Location'
+      'beta[4]': 'Job Location',
+      'beta[5]': 'Programming',
+      'beta[6]': 'Queries',
+      'beta[7]': 'Machine Learning',
+      'beta[8]': 'Dashboards',
+      'beta[9]': 'Cloud',
+      'beta[10]': 'Apache',
+      
   }
 
   mapped_coefficients_dict = {mapping_names[key]: value for key, value in coefficients_dict.items()}
@@ -452,7 +452,7 @@ def plot_coef(coefficients_dict):
 
   sns.set(style="ticks")
 
-  plt.figure(figsize=(11, 6))
+  plt.figure(figsize=(13, 8))
 
   # custom colors for the bars
   for feature, coef in zip(feature_names, coefficients):
